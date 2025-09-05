@@ -3,10 +3,6 @@ High School Management System API
 
 A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
-
-Endpoints:
-- GET /activities: List all available activities with details
-- POST /activities/{activity_name}/signup: Sign up a student for an activity
 """
 
 from fastapi import FastAPI, HTTPException
@@ -43,41 +39,44 @@ activities = {
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
     },
-    "Basketball Team": {
-        "description": "Competitive basketball training and inter-school tournaments",
-        "schedule": "Tuesdays and Thursdays, 4:00 PM - 6:00 PM",
-        "max_participants": 15,
-        "participants": ["alex@mergington.edu"]
-    },
-    "Swimming Club": {
-        "description": "Swimming techniques, water safety, and competitive swimming",
-        "schedule": "Wednesdays and Fridays, 3:30 PM - 5:00 PM",
-        "max_participants": 20,
-        "participants": ["sarah@mergington.edu", "mike@mergington.edu"]
-    },
-    "Art Club": {
-        "description": "Explore various art mediums including painting, drawing, and sculpture",
-        "schedule": "Mondays, 3:30 PM - 5:00 PM",
+    # Sports related activities
+    "Soccer Team": {
+        "description": "Join the school soccer team and compete in matches",
+        "schedule": "Wednesdays, 4:00 PM - 5:30 PM",
         "max_participants": 18,
-        "participants": ["lily@mergington.edu"]
+        "participants": ["alex@mergington.edu", "lucas@mergington.edu"]
+    },
+    "Basketball Club": {
+        "description": "Practice basketball skills and play friendly games",
+        "schedule": "Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 15,
+        "participants": ["mia@mergington.edu", "noah@mergington.edu"]
+    },
+    # Artistic activities
+    "Art Workshop": {
+        "description": "Explore painting, drawing, and sculpture techniques",
+        "schedule": "Mondays, 3:30 PM - 5:00 PM",
+        "max_participants": 16,
+        "participants": ["ava@mergington.edu", "liam@mergington.edu"]
     },
     "Drama Club": {
-        "description": "Acting, stage performance, and theatrical productions",
-        "schedule": "Thursdays, 3:30 PM - 5:30 PM",
-        "max_participants": 25,
-        "participants": ["james@mergington.edu", "natalie@mergington.edu"]
+        "description": "Act in plays and learn stage performance skills",
+        "schedule": "Fridays, 4:00 PM - 5:30 PM",
+        "max_participants": 20,
+        "participants": ["isabella@mergington.edu", "ethan@mergington.edu"]
     },
+    # Intellectual activities
     "Math Olympiad": {
-        "description": "Advanced mathematics problem solving and competitions",
-        "schedule": "Tuesdays, 3:30 PM - 4:30 PM",
+        "description": "Prepare for math competitions and solve challenging problems",
+        "schedule": "Tuesdays, 4:00 PM - 5:00 PM",
         "max_participants": 10,
-        "participants": ["kevin@mergington.edu"]
+        "participants": ["charlotte@mergington.edu", "benjamin@mergington.edu"]
     },
-    "Science Fair Club": {
-        "description": "Conduct experiments and prepare projects for science competitions",
-        "schedule": "Fridays, 3:30 PM - 5:00 PM",
-        "max_participants": 16,
-        "participants": ["rachel@mergington.edu", "tom@mergington.edu"]
+    "Science Club": {
+        "description": "Conduct experiments and explore scientific concepts",
+        "schedule": "Thursdays, 4:00 PM - 5:00 PM",
+        "max_participants": 14,
+        "participants": ["amelia@mergington.edu", "jacob@mergington.edu"]
     }
 }
 
@@ -94,14 +93,18 @@ def get_activities():
 
 @app.post("/activities/{activity_name}/signup")
 def signup_for_activity(activity_name: str, email: str):
-    """Sign up a student for an activity"""
-    # Validate activity exists
-    if activity_name not in activities:
-        raise HTTPException(status_code=404, detail="Activity not found")
+   """Sign up a student for an activity"""
+   # Validate activity exists
+   if activity_name not in activities:
+      raise HTTPException(status_code=404, detail="Activity not found")
 
-    # Get the specific activity
-    activity = activities[activity_name]
+   # Get the activity
+   activity = activities[activity_name]
 
-    # Add student
-    activity["participants"].append(email)
-    return {"message": f"Signed up {email} for {activity_name}"}
+   # Validate student is not already signed up
+   if email in activity["participants"]:
+     raise HTTPException(status_code=400, detail="Student is already signed up")
+
+   # Add student
+   activity["participants"].append(email)
+   return {"message": f"Signed up {email} for {activity_name}"}
